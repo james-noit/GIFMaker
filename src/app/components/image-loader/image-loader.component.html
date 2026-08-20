@@ -1,0 +1,41 @@
+@if (playback.isPlaying() && activeFrame(); as frame) {
+  <div class="stage stage--preview">
+    <img
+      class="stage__preview-image"
+      [src]="frame.fullResUrl ?? frame.thumbnailUrl"
+      [alt]="frame.name"
+    />
+    <span class="stage__badge">Preview</span>
+  </div>
+} @else {
+  <label
+    class="stage stage--drop"
+    [class.stage--dragging]="isDraggingOver()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    (drop)="onDrop($event)"
+  >
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      class="stage__input"
+      (change)="onFileInput($event)"
+    />
+
+    @if (isProcessing()) {
+      <app-spinner label="Processing photos…" />
+    } @else {
+      <div class="stage__hint">
+        <svg viewBox="0 0 24 24" class="stage__icon" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M19 13v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6H3l9-9 9 9zm-8 2v4h2v-4h3l-4-4-4 4z"
+          />
+        </svg>
+        <p class="stage__title">Drop photos here</p>
+        <p class="stage__subtitle">or tap to browse — JPG, PNG, WebP, GIF…</p>
+      </div>
+    }
+  </label>
+}

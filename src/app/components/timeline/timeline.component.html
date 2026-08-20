@@ -1,0 +1,49 @@
+@if (frameStore.count() > 0) {
+  <div
+    class="timeline"
+    cdkDropList
+    cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)="onDrop($event)"
+  >
+    @for (frame of frameStore.frames(); track trackById($index, frame)) {
+      <div cdkDrag class="timeline__cell">
+        <app-timeline-item
+          [frame]="frame"
+          [index]="$index"
+          [active]="playback.isPlaying() && playback.activeIndex() === $index"
+          (remove)="remove($event)"
+        />
+        <div class="timeline__placeholder" *cdkDragPlaceholder></div>
+      </div>
+    }
+  </div>
+} @else {
+  <p class="timeline__empty">Your timeline will appear here once you add photos.</p>
+}
+
+<div class="controls">
+  <button
+    type="button"
+    class="controls__play"
+    [disabled]="frameStore.count() === 0"
+    (click)="playback.toggle()"
+  >
+    @if (playback.isPlaying()) {
+      <span>⏸ Pause</span>
+    } @else {
+      <span>▶ Play</span>
+    }
+  </button>
+
+  <label class="controls__delay">
+    Delay
+    <input
+      type="number"
+      min="0.1"
+      step="0.1"
+      [ngModel]="frameStore.delayMs() / 1000"
+      (ngModelChange)="onDelayInput($event)"
+    />
+    s
+  </label>
+</div>

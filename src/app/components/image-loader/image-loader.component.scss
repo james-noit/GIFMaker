@@ -1,0 +1,121 @@
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.stage--drop {
+  cursor: pointer;
+}
+
+.stage--drop:hover {
+  border-color: var(--color-accent);
+}
+
+.stage--dragging {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  transform: scale(1.01);
+}
+
+.stage__input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.stage__hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-text-muted);
+  padding: 1.5rem;
+  text-align: center;
+  animation: fade-in 0.3s ease both;
+}
+
+.stage__icon {
+  width: 40px;
+  height: 40px;
+  color: var(--color-accent);
+  margin-bottom: 0.25rem;
+}
+
+.stage__title {
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.stage__subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.stage--preview {
+  background: #000;
+  animation: fade-in 0.2s ease both;
+}
+
+.stage__preview-image {
+  width: 100%;
+  height: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  animation: frame-pop 0.18s ease;
+}
+
+.stage__badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--color-accent) 85%, transparent);
+  color: var(--color-accent-contrast);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes frame-pop {
+  from {
+    opacity: 0.4;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .stage__hint,
+  .stage--preview,
+  .stage__preview-image {
+    animation: none !important;
+    transition: none !important;
+  }
+}
