@@ -1,0 +1,117 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-header-bg);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(6px);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.header__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.header__logo {
+  font-size: 1.3rem;
+}
+
+.header__toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 36px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.header__toggle span {
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-text);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease;
+}
+
+.header__toggle--open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.header__toggle--open span:nth-child(2) {
+  opacity: 0;
+}
+
+.header__toggle--open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.header__menu {
+  display: grid;
+  grid-template-rows: 0fr;
+  padding: 0 1rem;
+  transition: grid-template-rows 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.header__menu--open {
+  grid-template-rows: 1fr;
+}
+
+.header__menu-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+}
+
+.header__action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+}
+
+.header__action:hover:not(:disabled) {
+  background: var(--color-surface-alt);
+  transform: translateX(2px);
+}
+
+.header__action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.header__action--danger {
+  color: var(--color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .header__toggle span,
+  .header__menu,
+  .header__action {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  color-scheme: light;
+
+  /* Japanese notebook — light theme (default) */
+  --color-bg: #f6f1e7;
+  --color-bg-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 27px,
+    color-mix(in srgb, #7b8c6f 22%, transparent) 28px
+  );
+  --color-surface: #fffdf8;
+  --color-surface-alt: #efe7d6;
+  --color-header-bg: color-mix(in srgb, #fffdf8 92%, transparent);
+  --color-border: #d8cbb0;
+  --color-text: #2f2a20;
+  --color-text-muted: #7a705d;
+  --color-accent: #c0432c;
+  --color-accent-contrast: #fffdf8;
+  --color-danger: #b3261e;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --font-body: 'Klee One', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Night Dracula */
+  --color-bg: #282a36;
+  --color-bg-image: none;
+  --color-surface: #343746;
+  --color-surface-alt: #3a3d4e;
+  --color-header-bg: color-mix(in srgb, #21222c 92%, transparent);
+  --color-border: #44475a;
+  --color-text: #f8f8f2;
+  --color-text-muted: #b0b3c6;
+  --color-accent: #ff79c6;
+  --color-accent-contrast: #21222c;
+  --color-danger: #ff5555;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  background-image: var(--color-bg-image);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
