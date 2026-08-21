@@ -1,0 +1,52 @@
+<header class="header">
+  <div class="header__bar">
+    <div class="header__brand">
+      <span class="header__logo" aria-hidden="true">🎞️</span>
+      <span class="header__title">GIFMaker</span>
+    </div>
+
+    <button
+      type="button"
+      class="header__toggle"
+      [class.header__toggle--open]="isMenuOpen()"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="isMenuOpen()"
+      aria-controls="header-menu"
+      aria-label="Toggle menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <nav id="header-menu" class="header__menu" [class.header__menu--open]="isMenuOpen()">
+   <div class="header__menu-inner">
+    <button
+      type="button"
+      class="header__action"
+      [disabled]="frameStore.count() === 0 || isExporting()"
+      (click)="exportGif()"
+    >
+      @if (isExporting()) {
+        <app-spinner [size]="18" />
+        <span>Exporting… {{ (exportProgress() * 100) | number: '1.0-0' }}%</span>
+      } @else {
+        <span>⬇ Export as GIF</span>
+      }
+    </button>
+
+    <button type="button" class="header__action" (click)="theme.toggle()">
+      @if (theme.theme() === 'light') {
+        <span>🌙 Night Dracula mode</span>
+      } @else {
+        <span>☀️ Japanese notebook mode</span>
+      }
+    </button>
+
+    <button type="button" class="header__action header__action--danger" (click)="clearAndReset()">
+      <span>🧹 Clear &amp; reset</span>
+    </button>
+   </div>
+  </nav>
+</header>
