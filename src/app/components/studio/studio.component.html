@@ -1,0 +1,293 @@
+<section class="studio">
+  <div class="studio__topbar">
+    <h2 class="studio__title">Studio</h2>
+
+    @if (!recorder.isRecording()) {
+      <button
+        type="button"
+        class="studio__settings-toggle"
+        [attr.aria-expanded]="settingsOpen()"
+        (click)="toggleSettings()"
+      >
+        <app-icon name="settings" [size]="15" />
+        <span>Settings</span>
+        <span class="studio__rating-inline">
+          <app-rating-dot [rating]="selectedFpsOption()?.rating ?? 'good'" [size]="11" />
+          <app-rating-dot [rating]="selectedResolutionOption()?.rating ?? 'good'" [size]="11" />
+        </span>
+        <app-icon
+          name="chevron-down"
+          [size]="13"
+          class="studio__settings-caret"
+          [class.studio__settings-caret--open]="settingsOpen()"
+        />
+      </button>
+    }
+  </div>
+
+  @if (!recorder.isSupported) {
+    <p class="studio__notice studio__notice--error">
+      Screen recording isn't supported in this browser.
+    </p>
+  } @else {
+    @if (recorder.error(); as message) {
+      <p class="studio__notice studio__notice--error">{{ message }}</p>
+    }
+
+    @if (!recorder.isRecording() && settingsOpen()) {
+      <div class="studio__settings">
+        <label class="studio__setting">
+          <span class="studio__setting-label">
+            <app-rating-dot [rating]="selectedFpsOption()?.rating ?? 'good'" />
+            Frame rate
+          </span>
+          <select [ngModel]="recorder.fps()" (ngModelChange)="onFpsChange($event)">
+            @for (option of recorder.fpsOptions; track option.fps) {
+              <option [ngValue]="option.fps">{{ option.label }}</option>
+            }
+          </select>
+          <span class="studio__setting-hint">{{ selectedFpsOption()?.hint }}</span>
+        </label>
+
+        <label class="studio__setting">
+          <span class="studio__setting-label">
+            <app-rating-dot [rating]="selectedResolutionOption()?.rating ?? 'good'" />
+            Resolution
+          </span>
+          <select [ngModel]="recorder.maxDimension()" (ngModelChange)="onResolutionChange($event)">
+            @for (option of recorder.resolutionOptions; track option.maxDimension) {
+              <option [ngValue]="option.maxDimension">{{ option.label }}</option>
+            }
+          </select>
+          <span class="studio__setting-hint">{{ selectedResolutionOption()?.hint }}</span>
+        </label>
+
+        <label class="studio__uncap">
+          <input type="checkbox" [ngModel]="recorder.uncapped()" (ngModelChange)="onUncapChange($event)" />
+          <span>Uncap frame limit — allow the full 120s at these settings</span>
+        </label>
+
+        <p class="studio__setting-note">
+          {{ estimatedRecordingLabel() }}
+          @if (recorder.isMemoryHeavy()) {
+            <span
+              class="studio__setting-warning-inline"
+              [title]="'A full-length take at these settings could need roughly ' + (recorder.projectedFullLengthMb() | number: '1.0-0') + 'MB of memory — may slow down or crash weaker devices.'"
+            >
+              <app-icon name="warning" [size]="13" />
+              ~{{ recorder.projectedFullLengthMb() | number: '1.0-0' }}MB if uncapped
+            </span>
+          }
+        </p>
+      </div>
+    }
+
+    <div class="studio__stage">
+      <video
+        #previewVideo
+        class="studio__video"
+        [class.studio__video--hidden]="!recorder.isRecording()"
+        autoplay
+        muted
+        playsinline
+      ></video>
+
+      @if (!recorder.isRecording() && recorder.frameCount() === 0) {
+        <p class="studio__stage-placeholder">Your recording preview will appear here.</p>
+      }
+
+      @if (!recorder.isRecording() && recorder.frameCount() > 0) {
+        <div class="studio__stage-media">
+          @if (isPreviewPlaying() && previewFrame(); as pf) {
+            <img class="studio__stage-still" [src]="pf.dataUrl" alt="Preview frame" />
+            <span class="studio__preview-badge">Preview</span>
+          }
+          @if (!isPreviewPlaying() && trimmedFrames()[0]; as firstFrame) {
+            <img class="studio__stage-still" [src]="firstFrame.thumbUrl" alt="First trimmed frame" />
+          }
+
+          @if (hasCrop() || cropOpen()) {
+            <div class="studio__crop-mask studio__crop-mask--top" [style.height.%]="cropTop()"></div>
+            <div class="studio__crop-mask studio__crop-mask--bottom" [style.height.%]="cropBottom()"></div>
+            <div class="studio__crop-mask studio__crop-mask--left" [style.width.%]="cropLeft()"></div>
+            <div class="studio__crop-mask studio__crop-mask--right" [style.width.%]="cropRight()"></div>
+          }
+        </div>
+      }
+
+      @if (recorder.isRecording()) {
+        <span class="studio__rec-badge">
+          <app-icon name="record" [size]="9" />
+          REC
+        </span>
+      }
+    </div>
+
+    <div class="studio__controls">
+      @if (!recorder.isRecording()) {
+        <button type="button" class="studio__record-btn" (click)="startRecording()">
+          <app-icon name="record" [size]="14" />
+          <span>Record screen</span>
+        </button>
+      } @else {
+        <button type="button" class="studio__record-btn studio__record-btn--stop" (click)="stopRecording()">
+          <app-icon name="stop" [size]="14" />
+          <span>Stop</span>
+        </button>
+      }
+
+      <div class="studio__meta">
+        <span>{{ formatMs(recorder.elapsedMs()) }} / {{ formatMs(recorder.maxDurationMs) }}</span>
+        <span>{{ recorder.frameCount() }} / {{ recorder.maxFrames() }}f</span>
+      </div>
+    </div>
+
+    @if (!recorder.isRecording() && recorder.frameCount() > 0) {
+      <div class="studio__editor">
+        <div class="studio__filmstrip">
+          @for (frame of recorder.frames(); track frame.id; let i = $index) {
+            <img
+              class="studio__filmstrip-frame"
+              [class.studio__filmstrip-frame--excluded]="isExcluded(i)"
+              [src]="frame.thumbUrl"
+              [alt]="'Frame ' + (i + 1)"
+            />
+          }
+        </div>
+
+        <div class="studio__trim-grid">
+          <label class="studio__trim-label">
+            <span class="studio__trim-label-text">Start</span>
+            <input
+              type="range"
+              min="0"
+              [max]="recorder.frameCount() - 1"
+              [ngModel]="trimStart()"
+              (ngModelChange)="onStartChange($event)"
+            />
+          </label>
+          <label class="studio__trim-label">
+            <span class="studio__trim-label-text">End</span>
+            <input
+              type="range"
+              min="0"
+              [max]="recorder.frameCount() - 1"
+              [ngModel]="trimEnd()"
+              (ngModelChange)="onEndChange($event)"
+            />
+          </label>
+        </div>
+
+        <div class="studio__editor-row">
+          <span class="studio__trim-summary">
+            {{ trimmedFrames().length }}/{{ recorder.frameCount() }} frames · {{ trimmedDurationLabel() }}
+          </span>
+
+          <button
+            type="button"
+            class="studio__play-btn"
+            [disabled]="trimmedFrames().length === 0"
+            [attr.aria-label]="isPreviewPlaying() ? 'Pause preview' : 'Play preview'"
+            (click)="togglePreview()"
+          >
+            @if (isPreviewPlaying()) {
+              <app-icon name="pause" [size]="13" />
+            } @else {
+              <app-icon name="play" [size]="13" />
+            }
+          </button>
+
+          <button
+            type="button"
+            class="studio__crop-toggle"
+            [class.studio__crop-toggle--active]="hasCrop()"
+            [attr.aria-expanded]="cropOpen()"
+            aria-label="Crop"
+            (click)="toggleCrop()"
+          >
+            <app-icon name="crop" [size]="13" />
+          </button>
+
+          <label class="studio__delay-inline">
+            <input
+              type="number"
+              min="0.05"
+              step="0.05"
+              [ngModel]="delayMs() / 1000"
+              (ngModelChange)="onDelayInput($event)"
+            />
+            <span>s/frame</span>
+          </label>
+        </div>
+
+        @if (cropOpen()) {
+          <div class="studio__crop-grid">
+            <label class="studio__trim-label">
+              <span class="studio__trim-label-text">Top</span>
+              <input type="range" min="0" max="40" [ngModel]="cropTop()" (ngModelChange)="onCropTopChange($event)" />
+            </label>
+            <label class="studio__trim-label">
+              <span class="studio__trim-label-text">Bottom</span>
+              <input
+                type="range"
+                min="0"
+                max="40"
+                [ngModel]="cropBottom()"
+                (ngModelChange)="onCropBottomChange($event)"
+              />
+            </label>
+            <label class="studio__trim-label">
+              <span class="studio__trim-label-text">Left</span>
+              <input
+                type="range"
+                min="0"
+                max="40"
+                [ngModel]="cropLeft()"
+                (ngModelChange)="onCropLeftChange($event)"
+              />
+            </label>
+            <label class="studio__trim-label">
+              <span class="studio__trim-label-text">Right</span>
+              <input
+                type="range"
+                min="0"
+                max="40"
+                [ngModel]="cropRight()"
+                (ngModelChange)="onCropRightChange($event)"
+              />
+            </label>
+          </div>
+        }
+
+        @if (exportError(); as message) {
+          <p class="studio__notice studio__notice--error">{{ message }}</p>
+        }
+
+        <div class="studio__editor-actions">
+          <button type="button" class="studio__action studio__action--danger" (click)="discard()">
+            <app-icon name="trash" [size]="14" />
+            <span>Discard</span>
+          </button>
+          <button type="button" class="studio__action" (click)="addToTimeline()">
+            <app-icon name="send" [size]="14" />
+            <span>To Basic</span>
+          </button>
+          <button
+            type="button"
+            class="studio__action studio__action--primary"
+            [disabled]="isExporting()"
+            (click)="exportGif()"
+          >
+            @if (isExporting()) {
+              <app-spinner [size]="14" />
+              <span>{{ (exportProgress() * 100) | number: '1.0-0' }}%</span>
+            } @else {
+              <app-icon name="download" [size]="14" />
+              <span>GIF</span>
+            }
+          </button>
+        </div>
+      </div>
+    }
+  }
+</section>

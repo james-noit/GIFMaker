@@ -1,15 +1,17 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Frame } from '../../models/frame.model';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-timeline-item',
+  imports: [IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <figure class="item" [class.item--active]="active()">
       <img class="item__thumb" [src]="frame().thumbnailUrl" [alt]="frame().name" draggable="false" />
       @if (!frame().fullResUrl) {
         <span class="item__badge" title="Restored from a previous session — re-upload for full quality export">
-          ⟳
+          <app-icon name="refresh" [size]="11" />
         </span>
       }
       <button
@@ -18,7 +20,7 @@ import { Frame } from '../../models/frame.model';
         aria-label="Remove photo"
         (click)="remove.emit(frame().id)"
       >
-        ×
+        <app-icon name="close" [size]="12" />
       </button>
       <span class="item__index">{{ index() + 1 }}</span>
     </figure>
@@ -68,12 +70,13 @@ import { Frame } from '../../models/frame.model';
       right: 2px;
       width: 20px;
       height: 20px;
-      line-height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 50%;
       border: none;
       background: rgb(0 0 0 / 0.55);
       color: #fff;
-      font-size: 0.85rem;
       cursor: pointer;
       opacity: 0;
       transition: opacity 0.15s ease, transform 0.15s ease;
@@ -92,8 +95,9 @@ import { Frame } from '../../models/frame.model';
       position: absolute;
       bottom: 2px;
       left: 2px;
-      font-size: 0.7rem;
-      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      padding: 3px;
       border-radius: 4px;
       background: rgb(0 0 0 / 0.55);
       color: #fff;

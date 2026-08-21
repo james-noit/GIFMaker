@@ -1,0 +1,508 @@
+// Studio fills exactly the space `.main--studio` gives it (see app.component.scss),
+// so every section below is sized to *not* need page scrolling: fixed-height chrome
+// (topbar/controls/editor) plus one flexible section (the stage) that absorbs
+// whatever room is left.
+.studio {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: 0.45rem;
+}
+
+.studio__topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.studio__title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.studio__settings-toggle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.studio__rating-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.studio__settings-caret {
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.studio__settings-caret--open {
+  transform: rotate(180deg);
+}
+
+.studio__notice {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+}
+
+.studio__notice--error {
+  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  color: var(--color-danger);
+}
+
+.studio__settings {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  max-height: 42vh;
+  overflow-y: auto;
+}
+
+.studio__setting {
+  display: flex;
+  flex: 1 1 130px;
+  min-width: 130px;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.studio__setting-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.76rem;
+}
+
+.studio__setting select {
+  width: 100%;
+  padding: 0.32rem 0.45rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.8rem;
+}
+
+.studio__setting-hint {
+  min-height: 1.1em;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.studio__uncap {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.studio__uncap input {
+  accent-color: var(--color-accent);
+}
+
+.studio__setting-note {
+  flex-basis: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.studio__setting-warning-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-warning);
+  font-weight: 600;
+  cursor: help;
+}
+
+.studio__stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #000;
+}
+
+.studio__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.studio__video--hidden {
+  display: none;
+}
+
+.studio__stage-placeholder {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.studio__stage-media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.studio__stage-still {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+// Approximate crop preview: dims the regions that will be cut off. Sized as a
+// percentage of the image element's own box, so it's a close (not pixel-exact)
+// match when the source is letterboxed by object-fit: contain.
+.studio__crop-mask {
+  position: absolute;
+  background: rgb(0 0 0 / 0.68);
+  pointer-events: none;
+}
+
+.studio__crop-mask--top {
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.studio__crop-mask--bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.studio__crop-mask--left {
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.studio__crop-mask--right {
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.studio__rec-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: color-mix(in srgb, var(--color-danger) 85%, transparent);
+  color: #fff;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.studio__preview-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--color-accent) 85%, transparent);
+  color: var(--color-accent-contrast);
+}
+
+.studio__controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.studio__record-btn {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.studio__record-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.studio__record-btn--stop {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.studio__meta {
+  display: flex;
+  gap: 0.7rem;
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.studio__editor {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+}
+
+.studio__filmstrip {
+  display: flex;
+  gap: 0.25rem;
+  height: 38px;
+  overflow-x: auto;
+}
+
+.studio__filmstrip-frame {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.studio__filmstrip-frame--excluded {
+  opacity: 0.3;
+}
+
+.studio__trim-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.studio__trim-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.studio__trim-label-text {
+  white-space: nowrap;
+}
+
+.studio__trim-label input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--color-accent);
+}
+
+.studio__editor-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.studio__trim-summary {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio__play-btn {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+
+.studio__play-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.studio__play-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.studio__crop-toggle {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.studio__crop-toggle:hover {
+  background: var(--color-surface-alt);
+}
+
+.studio__crop-toggle--active {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.studio__crop-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.studio__delay-inline {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.studio__delay-inline input {
+  width: 3.4rem;
+  padding: 0.25rem 0.35rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.74rem;
+}
+
+.studio__editor-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.studio__action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.4rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.76rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.studio__action:hover:not(:disabled) {
+  background: var(--color-surface-alt);
+}
+
+.studio__action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.studio__action--danger {
+  color: var(--color-danger);
+}
+
+.studio__action--primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 600;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio__rec-badge,
+  .studio__record-btn,
+  .studio__filmstrip-frame,
+  .studio__play-btn,
+  .studio__settings-caret,
+  .studio__action {
+    animation: none !important;
+    transition: none !important;
+  }
+}

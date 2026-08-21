@@ -1,6 +1,12 @@
-<app-header />
+<div class="app-shell" [class.app-shell--studio]="appView.view() === 'studio'">
+  <app-header />
 
-<main class="main">
-  <app-image-loader />
-  <app-timeline />
-</main>
+  <main class="main" [class.main--studio]="appView.view() === 'studio'">
+    @if (appView.view() === 'basic') {
+      <app-image-loader />
+      <app-timeline />
+    } @else {
+      <app-studio />
+    }
+  </main>
+</div>

@@ -1,9 +1,24 @@
 <header class="header">
   <div class="header__bar">
     <div class="header__brand">
-      <span class="header__logo" aria-hidden="true">🎞️</span>
+      <app-icon name="logo" [size]="22" class="header__logo" />
       <span class="header__title">GIFMaker</span>
+      <span class="header__version">v{{ appVersion }}</span>
     </div>
+
+    <button type="button" class="header__view-toggle" (click)="toggleView()">
+      @if (appView.view() === 'basic') {
+        <app-icon name="camera" [size]="15" />
+        <span>Studio</span>
+      } @else {
+        <app-icon name="image" [size]="15" />
+        <span>Basic</span>
+      }
+    </button>
+
+    <nav class="header__actions header__actions--inline" aria-label="Actions">
+      <ng-container [ngTemplateOutlet]="actionButtons" />
+    </nav>
 
     <button
       type="button"
@@ -12,41 +27,51 @@
       (click)="toggleMenu()"
       [attr.aria-expanded]="isMenuOpen()"
       aria-controls="header-menu"
-      aria-label="Toggle menu"
     >
-      <span></span>
-      <span></span>
-      <span></span>
+      <span class="header__toggle-icon" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <span class="header__toggle-label">Menu</span>
     </button>
   </div>
 
   <nav id="header-menu" class="header__menu" [class.header__menu--open]="isMenuOpen()">
    <div class="header__menu-inner">
-    <button
-      type="button"
-      class="header__action"
-      [disabled]="frameStore.count() === 0 || isExporting()"
-      (click)="exportGif()"
-    >
-      @if (isExporting()) {
-        <app-spinner [size]="18" />
-        <span>Exporting… {{ (exportProgress() * 100) | number: '1.0-0' }}%</span>
-      } @else {
-        <span>⬇ Export as GIF</span>
-      }
-    </button>
-
-    <button type="button" class="header__action" (click)="theme.toggle()">
-      @if (theme.theme() === 'light') {
-        <span>🌙 Night Dracula mode</span>
-      } @else {
-        <span>☀️ Japanese notebook mode</span>
-      }
-    </button>
-
-    <button type="button" class="header__action header__action--danger" (click)="clearAndReset()">
-      <span>🧹 Clear &amp; reset</span>
-    </button>
+    <ng-container [ngTemplateOutlet]="actionButtons" />
    </div>
   </nav>
 </header>
+
+<ng-template #actionButtons>
+  <button
+    type="button"
+    class="header__action"
+    [disabled]="frameStore.count() === 0 || isExporting()"
+    (click)="exportGif()"
+  >
+    @if (isExporting()) {
+      <app-spinner [size]="18" />
+      <span>Exporting… {{ (exportProgress() * 100) | number: '1.0-0' }}%</span>
+    } @else {
+      <app-icon name="download" [size]="16" />
+      <span>Export as GIF</span>
+    }
+  </button>
+
+  <button type="button" class="header__action" (click)="theme.toggle()">
+    @if (theme.theme() === 'light') {
+      <app-icon name="moon" [size]="16" />
+      <span>Night Dracula mode</span>
+    } @else {
+      <app-icon name="sun" [size]="16" />
+      <span>Japanese notebook mode</span>
+    }
+  </button>
+
+  <button type="button" class="header__action header__action--danger" (click)="clearAndReset()">
+    <app-icon name="trash" [size]="16" />
+    <span>Clear &amp; reset</span>
+  </button>
+</ng-template>

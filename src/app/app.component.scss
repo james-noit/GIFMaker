@@ -1,5 +1,33 @@
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+// Studio pins the whole shell to exactly one viewport-height so its own
+// internal layout can size to fit without ever pushing a page scrollbar.
+.app-shell--studio {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
 .main {
   max-width: 640px;
   margin: 0 auto;
   padding: 1rem;
+  width: 100%;
+}
+
+.main--studio {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem;
+  // Safety net, not the primary mechanism: Studio's own layout is designed to
+  // fit without scrolling, but this keeps content reachable if it doesn't
+  // (e.g. very large system font sizes) instead of clipping it outright.
+  overflow-y: auto;
 }

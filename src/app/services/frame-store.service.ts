@@ -1,4 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { CapturedFrame } from '../models/captured-frame.model';
 import { Frame, StoredFrame, TimelineState } from '../models/frame.model';
 import { ImageProcessingService } from './image-processing.service';
 
@@ -41,6 +42,21 @@ export class FrameStoreService {
       };
       this.frames.update((current) => [...current, frame]);
     }
+    this.schedulePersist();
+  }
+
+  /** Imports a trimmed range of Studio-recorded frames as regular timeline frames. */
+  addCapturedFrames(frames: CapturedFrame[]): void {
+    if (frames.length === 0) return;
+    const newFrames: Frame[] = frames.map((frame, index) => ({
+      id: crypto.randomUUID(),
+      name: `studio-frame-${index + 1}.jpg`,
+      thumbnailUrl: frame.thumbUrl,
+      fullResUrl: frame.dataUrl,
+      width: frame.width,
+      height: frame.height,
+    }));
+    this.frames.update((current) => [...current, ...newFrames]);
     this.schedulePersist();
   }
 

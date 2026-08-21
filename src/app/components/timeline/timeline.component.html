@@ -1,20 +1,46 @@
 @if (frameStore.count() > 0) {
-  <div
-    class="timeline"
-    cdkDropList
-    cdkDropListOrientation="horizontal"
-    (cdkDropListDropped)="onDrop($event)"
-  >
-    @for (frame of frameStore.frames(); track trackById($index, frame)) {
-      <div cdkDrag class="timeline__cell">
-        <app-timeline-item
-          [frame]="frame"
-          [index]="$index"
-          [active]="playback.isPlaying() && playback.activeIndex() === $index"
-          (remove)="remove($event)"
-        />
-        <div class="timeline__placeholder" *cdkDragPlaceholder></div>
-      </div>
+  <div class="timeline-wrap">
+    <div
+      #scroller
+      class="timeline"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="onDrop($event)"
+      (scroll)="updateScrollState()"
+    >
+      @for (frame of frameStore.frames(); track trackById($index, frame)) {
+        <div cdkDrag class="timeline__cell">
+          <app-timeline-item
+            [frame]="frame"
+            [index]="$index"
+            [active]="playback.isPlaying() && playback.activeIndex() === $index"
+            (remove)="remove($event)"
+          />
+          <div class="timeline__placeholder" *cdkDragPlaceholder></div>
+        </div>
+      }
+    </div>
+
+    @if (canScrollLeft()) {
+      <button
+        type="button"
+        class="timeline-nav timeline-nav--left"
+        aria-label="Scroll timeline left"
+        (click)="scrollByAmount(-1)"
+      >
+        <app-icon name="chevron-left" [size]="18" />
+      </button>
+    }
+
+    @if (canScrollRight()) {
+      <button
+        type="button"
+        class="timeline-nav timeline-nav--right"
+        aria-label="Scroll timeline right"
+        (click)="scrollByAmount(1)"
+      >
+        <app-icon name="chevron-right" [size]="18" />
+      </button>
     }
   </div>
 } @else {
@@ -29,9 +55,11 @@
     (click)="playback.toggle()"
   >
     @if (playback.isPlaying()) {
-      <span>⏸ Pause</span>
+      <app-icon name="pause" [size]="15" />
+      <span>Pause</span>
     } @else {
-      <span>▶ Play</span>
+      <app-icon name="play" [size]="15" />
+      <span>Play</span>
     }
   </button>
 

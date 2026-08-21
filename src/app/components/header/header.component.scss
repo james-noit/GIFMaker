@@ -12,6 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   padding: 0.75rem 1rem;
 }
 
@@ -21,61 +22,120 @@
   gap: 0.5rem;
   font-weight: 700;
   color: var(--color-text);
+  white-space: nowrap;
 }
 
-.header__logo {
-  font-size: 1.3rem;
+.header__version {
+  font-weight: 500;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.header__view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.header__view-toggle:hover {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  transform: translateY(-1px);
+}
+
+// Inline actions: shown in the bar itself once there's enough room.
+.header__actions--inline {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .header__toggle {
   display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+  padding: 0.4rem 0.7rem;
+  color: var(--color-text);
+}
+
+.header__toggle-icon {
+  display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 4px;
-  width: 36px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 6px;
+  width: 20px;
+  height: 16px;
 }
 
-.header__toggle span {
+.header__toggle-icon span {
   height: 2px;
   border-radius: 2px;
   background: var(--color-text);
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease;
 }
 
-.header__toggle--open span:nth-child(1) {
+.header__toggle--open .header__toggle-icon span:nth-child(1) {
   transform: translateY(6px) rotate(45deg);
 }
 
-.header__toggle--open span:nth-child(2) {
+.header__toggle--open .header__toggle-icon span:nth-child(2) {
   opacity: 0;
 }
 
-.header__toggle--open span:nth-child(3) {
+.header__toggle--open .header__toggle-icon span:nth-child(3) {
   transform: translateY(-6px) rotate(-45deg);
 }
 
-.header__menu {
-  display: grid;
-  grid-template-rows: 0fr;
-  padding: 0 1rem;
-  transition: grid-template-rows 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+.header__toggle-label {
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-.header__menu--open {
-  grid-template-rows: 1fr;
+// Collapsible menu: an overlay dropdown so opening it never pushes or
+// overlaps the page content underneath (it floats above it instead).
+.header__menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 0.75rem 1rem;
+  background: var(--color-header-bg);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 16px 28px -14px rgb(0 0 0 / 0.4);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0.2s;
+}
+
+.header__menu.header__menu--open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .header__menu-inner {
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding-bottom: 0.75rem;
 }
 
 .header__action {
@@ -107,9 +167,30 @@
   color: var(--color-danger);
 }
 
+// Above the breakpoint there's enough room to show actions inline, so the
+// hamburger toggle and dropdown are hidden entirely.
+@media (min-width: 720px) {
+  .header__actions--inline {
+    display: flex;
+  }
+
+  .header__actions--inline .header__action {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .header__toggle {
+    display: none;
+  }
+
+  .header__menu {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .header,
-  .header__toggle span,
+  .header__toggle-icon span,
   .header__menu,
   .header__action {
     transition: none !important;

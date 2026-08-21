@@ -3,8 +3,10 @@ import GIF from 'gif.js';
 import { Frame } from '../models/frame.model';
 
 /** Cap the rendered GIF's longest edge to keep encode time and memory sane
- *  even when full-resolution source photos are large. */
-const MAX_GIF_DIMENSION = 640;
+ *  even when full-resolution source photos are large. Matches Studio's highest
+ *  capture resolution ("Max") so a full-quality recording isn't silently
+ *  downscaled on export. */
+const MAX_GIF_DIMENSION = 1920;
 
 export interface GifExportProgress {
   fraction: number;

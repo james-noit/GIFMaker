@@ -1,18 +1,22 @@
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { version } from '../../../../package.json';
+import { AppViewService } from '../../services/app-view.service';
 import { FrameStoreService } from '../../services/frame-store.service';
 import { GifExportService } from '../../services/gif-export.service';
 import { ThemeService } from '../../services/theme.service';
+import { IconComponent } from '../icon/icon.component';
 import { SpinnerComponent } from '../spinner/spinner.component';
 
 @Component({
   selector: 'app-header',
-  imports: [SpinnerComponent, DecimalPipe],
+  imports: [SpinnerComponent, DecimalPipe, NgTemplateOutlet, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
+  readonly appVersion = version;
   readonly isMenuOpen = signal(false);
   readonly isExporting = signal(false);
   readonly exportProgress = signal(0);
@@ -20,11 +24,17 @@ export class HeaderComponent {
   constructor(
     readonly theme: ThemeService,
     readonly frameStore: FrameStoreService,
+    readonly appView: AppViewService,
     private readonly gifExport: GifExportService,
   ) {}
 
   toggleMenu(): void {
     this.isMenuOpen.update((open) => !open);
+  }
+
+  toggleView(): void {
+    this.appView.toggle();
+    this.closeMenu();
   }
 
   closeMenu(): void {

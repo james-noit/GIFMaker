@@ -1,3 +1,7 @@
+.timeline-wrap {
+  position: relative;
+}
+
 .timeline {
   display: flex;
   gap: 0.6rem;
@@ -9,6 +13,40 @@
   background: var(--color-surface-alt);
   scroll-snap-type: x proximity;
   transition: background-color 0.2s ease;
+}
+
+.timeline-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.4);
+  transition: background-color 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+}
+
+.timeline-nav:hover {
+  background: var(--color-surface-alt);
+}
+
+.timeline-nav:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.timeline-nav--left {
+  left: 0.3rem;
+}
+
+.timeline-nav--right {
+  right: 0.3rem;
 }
 
 .timeline__cell {
@@ -55,6 +93,9 @@
 }
 
 .controls__play {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.5rem 1.1rem;
   border-radius: 999px;
   border: none;
@@ -99,8 +140,13 @@
 @media (prefers-reduced-motion: reduce) {
   .timeline__cell,
   .controls__play,
+  .timeline-nav,
   ::ng-deep .cdk-drag-animating,
   ::ng-deep .cdk-drop-list-dragging .timeline__cell {
     transition: none !important;
+  }
+
+  .timeline {
+    scroll-behavior: auto;
   }
 }
