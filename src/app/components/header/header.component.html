@@ -6,35 +6,52 @@
       <span class="header__version">v{{ appVersion }}</span>
     </div>
 
-    <button type="button" class="header__view-toggle" (click)="toggleView()">
-      @if (appView.view() === 'basic') {
-        <app-icon name="camera" [size]="15" />
-        <span>Studio</span>
-      } @else {
-        <app-icon name="image" [size]="15" />
-        <span>Basic</span>
-      }
-    </button>
+    <div class="header__coffee header__coffee--inline">
+      <span class="header__coffee-label">Enjoying it?</span>
+      <a
+        class="header__coffee-link"
+        href="https://www.buymeacoffee.com/jamesnoitt"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Buy me a coffee"
+      >
+        <span class="header__coffee-emoji" aria-hidden="true">☕</span>
+        <span class="header__coffee-text">Buy me a coffee</span>
+      </a>
+    </div>
 
-    <nav class="header__actions header__actions--inline" aria-label="Actions">
-      <ng-container [ngTemplateOutlet]="actionButtons" />
-    </nav>
+    <div class="header__right">
+      <button type="button" class="header__view-toggle" (click)="toggleView()">
+        @if (appView.view() === 'basic') {
+          <app-icon name="camera" [size]="15" />
+          <span>Studio</span>
+        } @else {
+          <app-icon name="image" [size]="15" />
+          <span>Basic</span>
+        }
+      </button>
 
-    <button
-      type="button"
-      class="header__toggle"
-      [class.header__toggle--open]="isMenuOpen()"
-      (click)="toggleMenu()"
-      [attr.aria-expanded]="isMenuOpen()"
-      aria-controls="header-menu"
-    >
-      <span class="header__toggle-icon" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-      <span class="header__toggle-label">Menu</span>
-    </button>
+      <nav class="header__actions header__actions--inline" aria-label="Actions">
+        <ng-container [ngTemplateOutlet]="actionButtons" />
+      </nav>
+
+      <button
+        type="button"
+        class="header__toggle"
+        [class.header__toggle--open]="isMenuOpen()"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="isMenuOpen()"
+        aria-controls="header-menu"
+        aria-label="Menu"
+      >
+        <span class="header__toggle-icon" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="header__toggle-label">Menu</span>
+      </button>
+    </div>
   </div>
 
   <nav id="header-menu" class="header__menu" [class.header__menu--open]="isMenuOpen()">
@@ -43,6 +60,26 @@
    </div>
   </nav>
 </header>
+
+<!--
+  Deliberately rendered outside <header>: that element uses backdrop-filter,
+  which per spec makes it the containing block for any position: fixed
+  descendant — a coffee button nested inside it would be "fixed" relative
+  to the header's own small box instead of the viewport, landing pinned
+  near the top instead of floating at the bottom. Living out here keeps it
+  truly viewport-fixed. Below 900px only this floats; the inline version
+  above (.header__coffee--inline) takes over once there's room in the bar.
+-->
+<a
+  class="header__coffee header__coffee--float"
+  href="https://www.buymeacoffee.com/jamesnoitt"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Buy me a coffee — support this project"
+>
+  <span class="header__coffee-emoji" aria-hidden="true">☕</span>
+  <span>Support this project</span>
+</a>
 
 <ng-template #actionButtons>
   <button
